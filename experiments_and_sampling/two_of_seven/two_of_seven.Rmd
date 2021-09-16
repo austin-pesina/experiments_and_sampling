@@ -1,0 +1,13 @@
+---
+title: "Two of the Seven Pillars"
+author: "Austin Pesina"
+date: "9/5/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Two of the Seven Pillars
+

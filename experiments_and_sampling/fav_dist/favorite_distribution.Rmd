@@ -1,0 +1,45 @@
+---
+title: "Favorite Distribution"
+author: "Austin Pesina"
+date: "8/25/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## The Poisson Distribution
+
+The Poisson distribution is a discrete probability of a given number of events occurring in a fixed time interval or region of space. The mean is a known constant and outcomes are independent of previous events - Poisson processes have no memory.
+
+## Probability Mass Function
+
+$$\begin{aligned}& X \sim \text{ Poisson} = \frac{e^{-\lambda t}(\lambda t)^{x}}{x!}, &&x=0, 1, 2, ... \\
+\text{where } &\lambda = \text{ average number of outcomes,} \\
+\text{and } &t=\text{time.}\end{aligned}$$
+
+The Poisson distribution makes a few assumption:
+
+\begin{itemize}
+ \item \emph{x} is the number of times an event occurs in an interval and can take any positive value.
+ \item Events occur independently, e.g. a previous occurrence has no impact on future occurrences.
+ \item The mean is assumed to be constant but may have small variations.
+ \item Two events cannot happen at the exact same time.
+\end{itemize}
+
+
+<center>
+  ![Multiple Poisson Distributions in a Single Interval](poisson.png){width=50%}
+  
+</center>
+
+\begin{thebibliography}{7}
+\bibitem{WikiNormalDist}
+WikiPedia,
+Poisson Distribution,
+\url{https://en.wikipedia.org/wiki/Poisson_distribution#Probability_mass_function}.
+\bibitem{PoissonDistExp}
+The Poisson Distribution and Poisson Process Explained.
+\url{https://towardsdatascience.com/the-poisson-distribution-and-poisson-process-explained-4e2cb17d459}
+\end{thebibliography}
