@@ -1,0 +1,31 @@
+---
+title: "Three Anova"
+author: "Austin Pesina"
+date: "12/2/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Case Study: Mouse Diets
+
+
+
+```{r message=FALSE}
+library(ggplot2)
+library(lmPerm)
+library(DescTools)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r}
+data <- Sleuth3::case0501
+attach(data)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

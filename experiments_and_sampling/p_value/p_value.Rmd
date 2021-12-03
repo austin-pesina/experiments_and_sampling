@@ -1,0 +1,219 @@
+---
+title: "A P-Value Sampling Distribution"
+author: "Austin Pesina"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+set.seed(1)
+
+# Function for P-value
+
+pvalueSampling <- function(popA, popB, n=25, REPS=1000) {
+  dist <- array(data=NA, dim=REPS)
+  for (i in 1:REPS){
+    A <- sample(popA, size=n)
+    B <- sample(popB, size=n)
+    H <- t.test(A, B, alternative="two.sided")    
+    dist[i] <- H$p.value
+  }
+  return(dist)
+}
+
+p.less <- function(A, limit=0.05/2) {
+  return( length(A[A < limit])/length(A) )
+}
+```
+
+## Exercise 1 
+
+**What was the estimated power of the test in the second example above? (Remember: It was a two-sided test, so use $\alpha/2$ rather than $\alpha$.)**
+
+```{r}
+pop_a_0.5 <- rnorm(1000, mean = 10, sd = 2)
+pop_b_0.5 <- rnorm(1000, mean = 11, sd = 2) # Cohen's D = 0.5
+
+p_value_data_0.5 <- data.frame(pval = pvalueSampling(pop_a_0.5, pop_b_0.5, REPS = 4096))
+
+p_reject_0.5 <- p.less(p_value_data_0.5$pval)
+names(p_reject_0.5) <- "observed power"
+p_reject_0.5
+```
+
+The observed power of the two-sided test is `r p_reject_0.5`.
+
+
+
+
+## Exercise 2
+
+**Modify the example to compare sample means when Cohen's D is 1.0 and 1.5. How does the observed power change?**
+
+```{r}
+# For Cohen's D = 1.0
+
+pop_a_1 <- rnorm(1000, mean = 10, sd = 2)
+pop_b_1 <- rnorm(1000, mean = 12, sd = 2) # Cohen's D = (12-10)/2 = 1
+
+p_value_data_1 <- data.frame(pval = pvalueSampling(pop_a_1, pop_b_1, REPS = 4096))
+
+p_reject_1 <- p.less(p_value_data_1$pval)
+names(p_reject_1) <- "observed power"
+p_reject_1
+```
+
+```{r}
+# For Cohen's D = 1.5
+
+pop_a_1.5 <- rnorm(1000, mean = 9, sd = 2)
+pop_b_1.5 <- rnorm(1000, mean = 12, sd = 2) # Cohen's D = (12-9)/2 = 1.5
+
+p_value_data_1.5 <- data.frame(pval = pvalueSampling(pop_a_1.5, pop_b_1.5, REPS = 4096))
+
+p_reject_1.5 <- p.less(p_value_data_1.5$pval)
+names(p_reject_1.5) <- "observed power"
+p_reject_1.5
+```
+
+The greater our Cohen's D, the closer to 1 our observed power becomes.
+
+
+
+
+## Exercise 3
+
+**Reduce the sample sizes to $n=9$, and compare to one of your previous cases. How does the observed power change?**
+
+```{r}
+pvalueSampling <- function(popA, popB, n=9, REPS=1000) {
+  dist <- array(data=NA, dim=REPS)
+  for (i in 1:REPS){
+    A <- sample(popA, size=n)
+    B <- sample(popB, size=n)
+    H <- t.test(A, B, alternative="two.sided")    
+    dist[i] <- H$p.value
+  }
+  return(dist)
+}
+
+p.less <- function(A, limit=0.05/2) {
+  return( length(A[A < limit])/length(A) )
+}
+
+
+
+pop_a_n_9 <- rnorm(1000, mean = 10, sd = 2)
+pop_b_n_9 <- rnorm(1000, mean = 11, sd = 2) # Cohen's D = 0.5
+
+p_value_data_n_9 <- data.frame(pval = pvalueSampling(pop_a_n_9, pop_b_n_9, REPS = 4096))
+
+p_reject_n_9 <- p.less(p_value_data_n_9$pval)
+names(p_reject_n_9) <- "observed power"
+p_reject_n_9
+```
+
+When our sample size was 25, our observed power was `r p_reject_0.5`. As we decreased our sample size to 9, our observed power dropped down to `r p_reject_n_9`.
+
+
+
+
+## Exercise 4
+
+Perform a similar comparison where the underlying populations are not normally distributed. You might try either a uniform distribution (`runif(n, min, max)`) or a gamma distribution (`rgamma(n,shape,rate)`). When adjusting your values for Cohen's D, recall that
+
+$$\begin{aligned} U \sim unif(a,b) && E[U] = \frac{a+b}{2} && Var[U] = \frac{(b-a)^2}{12} \\
+X \sim gamma(\alpha,\lambda) && E[X] = \frac{\alpha}{\lambda} && Var[X] = \frac{\alpha}{\lambda^2} \end{aligned} $$
+
+
+```{r}
+### Functions ###
+
+# t-test function
+
+pvalueSampling <- function(popA, popB, n=25, REPS=1000) {
+  dist <- array(data=NA, dim=REPS)
+  for (i in 1:REPS){
+    A <- sample(popA, size=n)
+    B <- sample(popB, size=n)
+    H <- t.test(A, B, alternative="two.sided")    
+    dist[i] <- H$p.value
+  }
+  return(dist)
+}
+
+# power function
+
+p.less <- function(A, limit=0.05/2) {
+  return( length(A[A < limit])/length(A) )
+}
+
+
+# expected value function
+
+ev <- function(min, max){
+  (min + max)/2
+}
+
+# Var function
+
+var_fun <- function(min, max){
+  ((max - min)^2/12)
+}
+
+
+# Pooled SD
+
+se <- function(var_1, var_2){
+  sqrt(((var_1)^2 + (var_2)^2)/2)
+}
+
+
+# Cohen's D
+
+cohen_d <- function(mean_a, mean_b, se){
+  (mean_a - mean_b)/se
+}
+```
+
+
+
+```{r}
+set.seed(1)
+# Data
+uni_pop_a <- runif(25, 1, 100)
+uni_pop_b <- runif(25, 1, 100)
+
+# Mean
+
+mean_uni_pop_a <- ev(min(uni_pop_a), max(uni_pop_a))
+mean_uni_pop_b <- ev(min(uni_pop_b), max(uni_pop_b))
+
+# Variance
+
+var_uni_pop_a <- var_fun(min(uni_pop_a), max(uni_pop_a))
+var_uni_pop_b <- var_fun(min(uni_pop_b), max(uni_pop_b))
+
+# Pooled SE
+
+pool_se <- se(var_uni_pop_a, var_uni_pop_b)
+
+# Cohen's D
+
+dist <- cohen_d(mean_uni_pop_a, mean_uni_pop_b, pool_se)
+dist
+
+
+p_value_uni <- data.frame(pval = pvalueSampling(uni_pop_a, uni_pop_b, REPS = 1000))
+
+uni_p_reject <- p.less(p_value_uni$pval)
+names(uni_p_reject) <- "observed power"
+uni_p_reject
+```
+
+Answer.
